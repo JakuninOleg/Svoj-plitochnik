@@ -48,3 +48,9 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Local Payload database and visual QA artifacts
+*.db
+*.db-shm
+*.db-wal
+/screenshots/
