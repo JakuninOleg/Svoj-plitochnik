@@ -3208,11 +3208,15 @@ html {
     object-position: 60% 72%;
   }
   .contact-art > p {
-    right: 24px;
+    right: auto;
     bottom: 26px;
-    left: auto;
+    left: 24px;
     color: var(--green);
     font-size: 29px;
+    text-align: left;
+    text-shadow:
+      0 1px 2px #f7f5ee,
+      0 0 12px #f7f5eedd;
   }
   .contact-copy {
     padding: 30px 22px 20px;
