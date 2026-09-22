@@ -437,7 +437,7 @@ export default function HomePage() {
                 Не знаете, с чего начать? Расскажите, что хотите изменить. Я помогу разобраться.
               </p>
               <a href="tel:+79112284417" className="contact-direct">
-                +7 911 228-44-17 <span>↗</span>
+                +7 911 228-44-17
               </a>
               <SocialLinks />
             </div>
