@@ -91,6 +91,13 @@ for (const selector of [
 await page.evaluate(() => window.scrollTo(0, 1200))
 await page.waitForTimeout(350)
 assert(await page.locator('.back-to-top').isVisible())
+await page.goto('http://localhost:3000/#quote', { waitUntil: 'networkidle' })
+await page.waitForTimeout(250)
+await page.screenshot({ path: 'screenshots/fidelity/quote-anchor-390.png', fullPage: false })
+const quoteTop = await page
+  .locator('#quote')
+  .evaluate((element) => element.getBoundingClientRect().top)
+assert(quoteTop >= 74, 'Sticky header overlaps the quote anchor')
 await page.close()
 console.log('Menu, gallery, Escape, video, photo upload and demo-form checks passed.')
 console.log(JSON.stringify(results, null, 2))
