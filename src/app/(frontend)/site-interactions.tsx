@@ -4,6 +4,17 @@ import { PhoneInput } from './phone-input'
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false)
+  const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const closeAndNavigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault()
+    setOpen(false)
+    if (navigationTimer.current) clearTimeout(navigationTimer.current)
+    navigationTimer.current = setTimeout(() => {
+      window.history.pushState(null, '', `#${id}`)
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 560)
+  }
 
   useEffect(() => {
     if (!open) return
@@ -20,6 +31,13 @@ export function MobileMenu() {
       document.removeEventListener('keydown', closeOnEscape)
     }
   }, [open])
+
+  useEffect(
+    () => () => {
+      if (navigationTimer.current) clearTimeout(navigationTimer.current)
+    },
+    [],
+  )
 
   return (
     <div className="mobile-menu">
@@ -61,7 +79,7 @@ export function MobileMenu() {
               ['reviews', 'Отзывы'],
               ['contacts', 'Контакты'],
             ].map(([id, label], index) => (
-              <a key={id} href={'#' + id} onClick={() => setOpen(false)}>
+              <a key={id} href={'#' + id} onClick={(event) => closeAndNavigate(event, id)}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 {label}
                 <b aria-hidden="true">↗</b>
@@ -71,7 +89,11 @@ export function MobileMenu() {
           <div className="mobile-drawer-contact">
             <span>Обсудить задачу лично</span>
             <a href="tel:+79112284417">+7 911 228-44-17</a>
-            <a className="button red" href="#quote" onClick={() => setOpen(false)}>
+            <a
+              className="button red"
+              href="#quote"
+              onClick={(event) => closeAndNavigate(event, 'quote')}
+            >
               Оставить заявку <span>→</span>
             </a>
           </div>
