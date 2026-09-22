@@ -3234,6 +3234,8 @@ html {
     margin-top: 15px;
   }
   .contact-form {
+    width: calc(100% - 28px);
+    max-width: none;
     margin: 0 14px 28px;
     padding: 20px 16px;
     display: flex;
