@@ -3,32 +3,106 @@ import { useEffect, useRef, useState } from 'react'
 import { PhoneInput } from './phone-input'
 
 export function MobileMenu() {
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+
+    const previousOverflow = document.body.style.overflow
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [open])
+
   return (
-    <details className="mobile-menu">
-      <summary aria-label="Открыть меню">
+    <div className="mobile-menu">
+      <button
+        className="mobile-menu-trigger"
+        type="button"
+        aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
+        aria-expanded={open}
+        aria-controls="mobile-navigation"
+        onClick={() => setOpen((value) => !value)}
+      >
         <span />
         <span />
         <span />
-      </summary>
-      <nav aria-label="Мобильная навигация">
-        {[
-          ['master', 'О мастере'],
-          ['projects', 'Объекты'],
-          ['quote', 'Рассчитать по фото'],
-          ['reports', 'Видео'],
-          ['reviews', 'Отзывы'],
-          ['contacts', 'Контакты'],
-        ].map(([id, label]) => (
-          <a
-            key={id}
-            href={'#' + id}
-            onClick={(e) => e.currentTarget.closest('details')?.removeAttribute('open')}
-          >
-            {label}
-          </a>
-        ))}
-      </nav>
-    </details>
+      </button>
+      <div className={`mobile-drawer-shell${open ? ' is-open' : ''}`} aria-hidden={!open}>
+        <button
+          className="mobile-drawer-backdrop"
+          type="button"
+          aria-label="Закрыть меню"
+          tabIndex={open ? 0 : -1}
+          onClick={() => setOpen(false)}
+        />
+        <aside className="mobile-drawer" id="mobile-navigation" aria-label="Мобильное меню">
+          <div className="mobile-drawer-head">
+            <img src="/logo-svoy-plitochnik.svg" alt="Свой плиточник" />
+            <button type="button" aria-label="Закрыть меню" onClick={() => setOpen(false)}>
+              <span />
+              <span />
+            </button>
+          </div>
+          <p className="mobile-drawer-kicker">Георгий · мастер-плиточник</p>
+          <nav aria-label="Мобильная навигация">
+            {[
+              ['master', 'О мастере'],
+              ['projects', 'Объекты'],
+              ['quote', 'Рассчитать по фото'],
+              ['reports', 'Видео с объектов'],
+              ['reviews', 'Отзывы'],
+              ['contacts', 'Контакты'],
+            ].map(([id, label], index) => (
+              <a key={id} href={'#' + id} onClick={() => setOpen(false)}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                {label}
+                <b aria-hidden="true">↗</b>
+              </a>
+            ))}
+          </nav>
+          <div className="mobile-drawer-contact">
+            <span>Обсудить задачу лично</span>
+            <a href="tel:+79112284417">+7 911 228-44-17</a>
+            <a className="button red" href="#quote" onClick={() => setOpen(false)}>
+              Оставить заявку <span>→</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  )
+}
+
+export function BackToTop() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const update = () => setVisible(window.scrollY > 700)
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    return () => window.removeEventListener('scroll', update)
+  }, [])
+
+  return (
+    <button
+      className={`back-to-top${visible ? ' is-visible' : ''}`}
+      type="button"
+      aria-label="Наверх"
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6 14 6-6 6 6" />
+      </svg>
+      <span>Наверх</span>
+    </button>
   )
 }
 type Item = { image: string; title: string; meta: string }
@@ -252,29 +326,29 @@ export function LeadForm({ variant }: { variant: 'quote' | 'contact' }) {
         </>
       ) : (
         <>
-          <label className="contact-field-label" htmlFor="contact-name">
+          <label className="contact-control" htmlFor="contact-name">
             Ваше имя
+            <input
+              id="contact-name"
+              name="name"
+              placeholder="Как к вам обращаться"
+              autoComplete="given-name"
+              required
+            />
           </label>
-          <input
-            id="contact-name"
-            name="name"
-            placeholder="Ваше имя"
-            autoComplete="given-name"
-            required
-          />
-          <label className="contact-field-label" htmlFor="contact-phone">
+          <label className="contact-control" htmlFor="contact-phone">
             Номер телефона
+            <PhoneInput id="contact-phone" />
           </label>
-          <PhoneInput id="contact-phone" />
-          <label className="contact-field-label" htmlFor="contact-question">
+          <label className="contact-control contact-control--wide" htmlFor="contact-question">
             Ваш вопрос
+            <textarea
+              id="contact-question"
+              name="question"
+              placeholder="Например: нужно уложить плитку в ванной, около 6 м²"
+              rows={3}
+            />
           </label>
-          <textarea
-            id="contact-question"
-            name="question"
-            placeholder="Например: нужно уложить плитку в ванной, около 6 м²"
-            rows={3}
-          />
           <button className="button red" type="submit">
             Обсудить с Георгием <span>→</span>
           </button>

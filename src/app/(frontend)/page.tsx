@@ -1,4 +1,4 @@
-import { Gallery, LeadForm, MobileMenu } from './site-interactions'
+import { BackToTop, Gallery, LeadForm, MobileMenu } from './site-interactions'
 import './styles.css'
 import './refinements.css'
 
@@ -471,6 +471,7 @@ export default function HomePage() {
           <p>Надёжный ремонт. Настоящие люди.</p>
         </div>
       </footer>
+      <BackToTop />
     </div>
   )
 }

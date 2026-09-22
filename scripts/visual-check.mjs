@@ -7,7 +7,7 @@ const browser = await chromium.launch({
   executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
 })
 const results = []
-for (const width of [2560, 1920, 1366, 1024, 768, 390, 360]) {
+for (const width of [2560, 1920, 1366, 1024, 768, 440, 390, 360]) {
   const page = await browser.newPage({
     viewport: { width, height: width > 1000 ? 1080 : 900 },
     deviceScaleFactor: 1,
@@ -49,9 +49,11 @@ assert(
 )
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
 await page.goto('http://localhost:3000', { waitUntil: 'networkidle' })
-await page.locator('.mobile-menu summary').click()
+await page.locator('.mobile-menu-trigger').click()
+await page.waitForTimeout(650)
+await page.screenshot({ path: 'screenshots/fidelity/menu-390.png', fullPage: false })
 await page.locator('.mobile-menu a[href="#projects"]').click()
-assert.equal(await page.locator('.mobile-menu').getAttribute('open'), null)
+assert.equal(await page.locator('.mobile-menu-trigger').getAttribute('aria-expanded'), 'false')
 await page.locator('.project-grid button').first().click()
 assert(await page.locator('dialog[open]').isVisible())
 await page.keyboard.press('Escape')
@@ -74,6 +76,21 @@ assert(await page.getByText('Выбрано фото: 1').isVisible())
 assert(await page.locator('.photo-previews img').isVisible())
 await page.locator('.quote-form button[type="submit"]').click()
 assert(await page.getByRole('status').isVisible())
+for (const selector of [
+  '.facts',
+  '.quote-section',
+  '.reports',
+  '.process',
+  '.contact-wrap',
+  '.site-footer',
+]) {
+  await page.locator(selector).screenshot({
+    path: `screenshots/fidelity/mobile-${selector.replaceAll('.', '')}-390.png`,
+  })
+}
+await page.evaluate(() => window.scrollTo(0, 1200))
+await page.waitForTimeout(350)
+assert(await page.locator('.back-to-top').isVisible())
 await page.close()
 console.log('Menu, gallery, Escape, video, photo upload and demo-form checks passed.')
 console.log(JSON.stringify(results, null, 2))
